@@ -84,6 +84,13 @@ int main()
         if(chat_opt == CHAT_LOGOUT)
         {
             send(sock_fd,&msg,sizeof(ClientMessage),0);
+            ClientMessage ack;
+            ssize_t bytes = recv(sock_fd,&ack,sizeof(ClientMessage),0);
+            if(bytes > 0 && strcmp(ack.sender,"Server")==0)
+            {
+                printf("Server reply : %s\n",ack.message);
+            }
+            
             is_running = 0;
             break;
         }
