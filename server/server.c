@@ -42,7 +42,7 @@ int main()
     {
         UserRecord users[MAX_CLIENT];
         int count = 0;
-        while(fscanf(fp,"%s %s %d %d",users[count].username, users[count].password, users[count].status, users[count].sock_fd)==4)
+        while(fscanf(fp,"%s %s %d %d",users[count].username, users[count].password, &users[count].status, &users[count].sock_fd)==4)
         {
             users[count].status = OFFLINE;
             users[count].sock_fd = -1;
@@ -60,7 +60,8 @@ int main()
 
     while(1)
     {
-        client_fd = accept(server_fd,(struct sockaddr *)&client_addr,sizeof(client_addr));
+        socklen_t addr_len = sizeof(client_addr);
+        client_fd = accept(server_fd,(struct sockaddr *)&client_addr,&addr_len);
         if(client_fd<0);
         {
             perror("Accept failed");
@@ -69,7 +70,7 @@ int main()
         int *new_sock = malloc(sizeof(int));
         *new_sock = client_fd;
         pthread_t tid;
-        pthread_create(tid,NULL,handle_client,(void * )new_sock);
+        pthread_create(&tid,NULL,handle_client,(void * )new_sock);
         pthread_detach(tid);
     }
 close(server_fd);
