@@ -63,7 +63,7 @@ void *handle_client(void *argc)
             logout_user(logged_in_user);
             ClientMessage logout_reply;
             memset(&logout_reply,0,sizeof(ClientMessage));
-            strcpy(logout_reply.sender,"Sever");
+            strcpy(logout_reply.sender,"Server");
             strcpy(logout_reply.message,"Logged out successfully");
             send(sock_fd,&logout_reply,sizeof(ClientMessage),0);
 
@@ -183,7 +183,7 @@ void logout_user(const char *username)
     {
         if(strcmp(users[count].username,username)==0)
         {
-            users[count].status = ONLINE;
+            users[count].status = OFFLINE;
             users[count].sock_fd = -1;          
         
         }
@@ -193,7 +193,7 @@ void logout_user(const char *username)
     fp = fopen(DB_FILE,"w");
     for(int i =0;i<count;i++)
     {
-        fprintf(fp,"%s %s %d %d",users[count].username, users[count].password, users[count].status, users[count].sock_fd);
+        fprintf(fp,"%s %s %d %d\n",users[i].username, users[i].password, users[i].status, users[i].sock_fd);
     }
     fclose(fp);
     pthread_mutex_unlock(&db_mutex);
@@ -242,11 +242,15 @@ void send_online_users_list(int sock_fd)
     char u[USERNAME_LEN],p[PASSWD_LEN];
     int st,fd;
     ClientMessage sys_msg;
-    while(fscanf(fp,"%s %s %d %d",u,p,&st,&fd))
+    while(fscanf(fp,"%s %s %d %d",u,p,&st,&fd)==4)
     {
-        memset(&sys_msg,0,sizeof(ClientMessage));
-        snprintf(sys_msg.message,sizeof(sys_msg.message),"User %s is online",u);
-        send(sock_fd,&sys_msg,sizeof(ClientMessage),0);
+        if(st == ONLINE)
+        {
+            memset(&sys_msg,0,sizeof(ClientMessage));
+            snprintf(sys_msg.message,sizeof(sys_msg.message),"User %s is online",u);
+            send(sock_fd,&sys_msg,sizeof(ClientMessage),0);
+        }
+        
     }
     fclose(fp);
     pthread_mutex_unlock(&db_mutex);
@@ -324,7 +328,7 @@ int register_user(const char *username,const char *password, char *reply_msg)
             return 0;
         }
     }
-    fprintf(fp,"%s %s %d %d",username,password,OFFLINE,-1);
+    fprintf(fp,"%s %s %d %d\n",username,password,OFFLINE,-1);
     fclose(fp);
     pthread_mutex_unlock(&db_mutex);
     strcpy(reply_msg,"Registration successful");

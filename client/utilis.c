@@ -4,20 +4,25 @@ extern int sock_fd;
 extern int is_running;
 
 
-int verify_input(int option,int id)
+int verify_input(int option, int id)
 {
-    if(id == 1 && option != 1 || option !=2)
+    if (id == 1)
     {
-        return 0;
+        
+        if (option == 1 || option == 2)
+            return 0; 
+        else
+            return 1; 
     }
-    else if(id == 2 && option != 1 || option !=2 || option !=3)
+    else if (id == 2)
     {
-        return 0;
+       
+        if (option == 1 || option == 2 || option == 3)
+            return 0; 
+        else
+            return 1; 
     }
-    else 
-    {
-        return 1;
-    }
+    return 1;
 }
 
 void *recive_handler(void *argc)

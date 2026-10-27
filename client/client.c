@@ -107,7 +107,7 @@ int main()
             send(sock_fd,&msg,sizeof(ClientMessage),0);
             printf("Single message send successufully\n");
         }
-        else if(chat_opt = CHAT_GROUP)
+        else if(chat_opt == CHAT_GROUP)
         {
             getchar();
             printf("Enter the message to send : ");

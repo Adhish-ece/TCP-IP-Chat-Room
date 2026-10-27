@@ -34,7 +34,7 @@ int main()
         close(server_fd);
         exit(EXIT_FAILURE);
     }
-    printf("[SERVER] TCP Chat Sever is running on port %d....",PORT);
+    printf("[SERVER] TCP Chat Sever is running on port %d....\n",PORT);
 
     pthread_mutex_lock(&db_mutex);
     FILE *fp = fopen(DB_FILE,"r");
@@ -52,7 +52,7 @@ int main()
         fp = fopen(DB_FILE,"w");
         for(int i = 0;i<count; i++)
         {
-            fprintf(fp,"%s %s %d %d\n",users[count].username, users[count].password, users[count].status, users[count].sock_fd);
+            fprintf(fp,"%s %s %d %d\n",users[i].username, users[i].password, users[i].status, users[i].sock_fd);
         }
         fclose(fp);
     }
@@ -62,7 +62,7 @@ int main()
     {
         socklen_t addr_len = sizeof(client_addr);
         client_fd = accept(server_fd,(struct sockaddr *)&client_addr,&addr_len);
-        if(client_fd<0);
+        if(client_fd<0)
         {
             perror("Accept failed");
             continue;
